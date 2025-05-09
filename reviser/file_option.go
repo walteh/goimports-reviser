@@ -67,3 +67,11 @@ func WithReader(r io.Reader) SourceFileOption {
 		return nil
 	}
 }
+
+// WithRenameImport is an option to change the import name
+func WithRenameImport(old, new string) SourceFileOption {
+	return func(f *SourceFile) error {
+		f.renameImports[old] = new
+		return nil
+	}
+}

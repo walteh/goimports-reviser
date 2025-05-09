@@ -39,6 +39,7 @@ type SourceFile struct {
 	hasSeparateSideEffectGroup     bool
 	companyPackagePrefixes         []string
 	importsOrders                  ImportsOrders
+	renameImports                  map[string]string
 
 	projectName string
 	filePath    string
@@ -337,6 +338,7 @@ func (f *SourceFile) fixImports(
 		)
 
 		imports := f.importsOrders.sortImportsByOrder(groups)
+
 		dd.Specs = rebuildImports(dd.Tok, commentsMetadata, imports)
 	}
 
@@ -513,6 +515,12 @@ func (f *SourceFile) parseImports(file *ast.File) (map[string]*commentsMetadata,
 				file, packageImports, strings.Trim(importSpec.Path.Value, `"`),
 			) {
 				continue
+			}
+
+			if f.renameImports != nil {
+				if newPath, ok := f.renameImports[importSpec.Path.Value]; ok {
+					importSpec.Path.Value = newPath
+				}
 			}
 
 			var importSpecStr string
