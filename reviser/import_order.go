@@ -12,6 +12,9 @@ const (
 	// StdImportsOrder is std libs, e.g. fmt, errors, strings...
 	StdImportsOrder      ImportsOrder = "std"
 	NamedStdImportsOrder ImportsOrder = "namedStd"
+	// X imports order
+	XImportsOrder      ImportsOrder = "x"
+	NamedXImportsOrder ImportsOrder = "namedX"
 	// CompanyImportsOrder is packages that belong to the same organization
 	CompanyImportsOrder      ImportsOrder = "company"
 	NamedCompanyImportsOrder ImportsOrder = "namedCompany"
@@ -28,7 +31,7 @@ const (
 )
 
 const (
-	defaultImportsOrder = "std,general,company,project"
+	defaultImportsOrder = "std,x,general,company,project"
 )
 
 // ImportsOrders alias to []ImportsOrder
@@ -51,6 +54,8 @@ func (o ImportsOrders) sortImportsByOrder(importGroups *groupsImports) [][]strin
 			imports = appendGroups(importGroups.company, importGroups.namedCompany)
 		case ProjectImportsOrder:
 			imports = appendGroups(importGroups.project, importGroups.namedProject)
+		case XImportsOrder:
+			imports = appendGroups(importGroups.x, importGroups.namedX)
 		case BlankedImportsOrder:
 			imports = importGroups.blanked
 		case DottedImportsOrder:
@@ -87,20 +92,24 @@ func (o ImportsOrders) hasRequiredGroups() bool {
 		hasCompany bool
 		hasGeneral bool
 		hasProject bool
+		hasX       bool
 	)
 	for _, order := range o {
 		switch order {
 		case StdImportsOrder:
 			hasStd = true
+		case XImportsOrder:
+			hasX = true
 		case CompanyImportsOrder:
 			hasCompany = true
 		case GeneralImportsOrder:
 			hasGeneral = true
 		case ProjectImportsOrder:
 			hasProject = true
+
 		}
 	}
-	return hasStd && hasCompany && hasGeneral && hasProject
+	return hasStd && hasCompany && hasGeneral && hasProject && hasX
 }
 
 // StringToImportsOrders will convert string, like "std,general,company,project" to ImportsOrder array type.
@@ -117,7 +126,7 @@ func StringToImportsOrders(s string) (ImportsOrders, error) {
 		group := ImportsOrder(strings.TrimSpace(g))
 		switch group {
 		case StdImportsOrder, CompanyImportsOrder, ProjectImportsOrder,
-			GeneralImportsOrder, BlankedImportsOrder, DottedImportsOrder:
+			GeneralImportsOrder, BlankedImportsOrder, DottedImportsOrder, XImportsOrder:
 		default:
 			return nil, fmt.Errorf(`unknown order group type: %q`, group)
 		}

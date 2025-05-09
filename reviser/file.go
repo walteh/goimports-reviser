@@ -173,10 +173,12 @@ func (f *SourceFile) groupImports(
 ) *groupsImports {
 	var (
 		stdImports            []string
+		xImports              []string
 		projectImports        []string
 		projectLocalPkgs      []string
 		generalImports        []string
 		namedStdImports       []string
+		namedXImports         []string
 		namedProjectImports   []string
 		namedProjectLocalPkgs []string
 		namedGeneralImports   []string
@@ -197,6 +199,19 @@ func (f *SourceFile) groupImports(
 
 		pkgWithoutAlias := skipPackageAlias(imprt)
 		values := strings.Split(imprt, " ")
+
+		if strings.Contains(imprt, "\"golang.org/x/") || strings.Contains(imprt, "\"github.com/pkg/") {
+			if f.shouldSeparateNamedImports {
+				if len(values) > 1 {
+					namedXImports = append(namedXImports, imprt)
+				} else {
+					xImports = append(xImports, imprt)
+				}
+				continue
+			}
+			xImports = append(xImports, imprt)
+			continue
+		}
 
 		if _, ok := std.StdPackages[pkgWithoutAlias]; ok {
 			if f.shouldSeparateNamedImports {
@@ -258,12 +273,14 @@ func (f *SourceFile) groupImports(
 	}
 
 	sort.Strings(stdImports)
+	sort.Strings(xImports)
 	sort.Strings(generalImports)
 	sort.Strings(projectLocalPkgs)
 	sort.Strings(projectImports)
 	sort.Strings(blankedImports)
 	sort.Strings(dottedImports)
 	sort.Strings(namedStdImports)
+	sort.Strings(namedXImports)
 	sort.Strings(namedGeneralImports)
 	sort.Strings(namedProjectLocalPkgs)
 	sort.Strings(namedProjectImports)
@@ -272,6 +289,8 @@ func (f *SourceFile) groupImports(
 		common: &common{
 			std:          stdImports,
 			namedStd:     namedStdImports,
+			x:            xImports,
+			namedX:       namedXImports,
 			general:      generalImports,
 			namedGeneral: namedGeneralImports,
 			company:      projectLocalPkgs,

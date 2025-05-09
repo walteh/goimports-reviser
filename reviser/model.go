@@ -9,6 +9,8 @@ type groupsImports struct {
 type common struct {
 	std          []string
 	namedStd     []string
+	x            []string
+	namedX       []string
 	general      []string
 	namedGeneral []string
 	company      []string
@@ -19,6 +21,6 @@ type common struct {
 
 func (c *common) defaultSorting() [][]string {
 	return [][]string{
-		c.std, c.namedStd, c.general, c.namedGeneral, c.company, c.namedCompany, c.project, c.namedProject,
+		c.std, c.namedStd, c.x, c.namedX, c.general, c.namedGeneral, c.company, c.namedCompany, c.project, c.namedProject,
 	}
 }
