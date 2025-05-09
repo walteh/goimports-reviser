@@ -42,6 +42,7 @@ type SourceFile struct {
 
 	projectName string
 	filePath    string
+	reader      io.Reader
 }
 
 // NewSourceFile constructor
@@ -54,6 +55,10 @@ func NewSourceFile(projectName, filePath string) *SourceFile {
 
 // Fix is for revise imports and format the code. Returns formated content, original content, true if formatted content is different from original and error.
 func (f *SourceFile) Fix(options ...SourceFileOption) ([]byte, []byte, bool, error) {
+	if f.filePath == StandardInput && f.reader == nil {
+		options = append(options, WithReader(os.Stdin))
+	}
+
 	for _, option := range options {
 		err := option(f)
 		if err != nil {
@@ -63,8 +68,8 @@ func (f *SourceFile) Fix(options ...SourceFileOption) ([]byte, []byte, bool, err
 
 	var originalContent []byte
 	var err error
-	if f.filePath == StandardInput {
-		originalContent, err = io.ReadAll(os.Stdin)
+	if f.reader != nil {
+		originalContent, err = io.ReadAll(f.reader)
 	} else {
 		originalContent, err = os.ReadFile(f.filePath)
 	}

@@ -1,6 +1,7 @@
 package reviser
 
 import (
+	"io"
 	"strings"
 )
 
@@ -57,4 +58,12 @@ func WithSkipGeneratedFile(f *SourceFile) error {
 func WithSeparatedNamedImports(f *SourceFile) error {
 	f.shouldSeparateNamedImports = true
 	return nil
+}
+
+// WithReader is an option to read from a reader instead of a file
+func WithReader(r io.Reader) SourceFileOption {
+	return func(f *SourceFile) error {
+		f.reader = r
+		return nil
+	}
 }
