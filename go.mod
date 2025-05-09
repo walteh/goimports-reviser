@@ -1,4 +1,4 @@
-module github.com/incu6us/goimports-reviser/v3
+module github.com/walteh/goimports-reviser/v3
 
 go 1.24
 
