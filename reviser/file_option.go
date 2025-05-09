@@ -74,7 +74,7 @@ func WithRenameImport(old, new string) SourceFileOption {
 		if f.renameImports == nil {
 			f.renameImports = make(map[string]string)
 		}
-		f.renameImports[old] = new
+		f.renameImports[strings.Trim(old, `"`)] = strings.Trim(new, `"`)
 		return nil
 	}
 }

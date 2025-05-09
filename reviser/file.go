@@ -518,8 +518,8 @@ func (f *SourceFile) parseImports(file *ast.File) (map[string]*commentsMetadata,
 			}
 
 			if f.renameImports != nil {
-				if newPath, ok := f.renameImports[importSpec.Path.Value]; ok {
-					importSpec.Path.Value = newPath
+				if newPath, ok := f.renameImports[strings.Trim(importSpec.Path.Value, `"`)]; ok {
+					importSpec.Path.Value = fmt.Sprintf(`"%s"`, newPath)
 				}
 			}
 
